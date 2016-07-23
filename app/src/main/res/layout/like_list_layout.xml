@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/comment_list_like"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/comment_reply_container_bg">
+
+    <TextView
+        android:id="@+id/tweet_like_users"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试一下"
+        android:layout_marginLeft="5dp"/>
+
+
+</RelativeLayout>

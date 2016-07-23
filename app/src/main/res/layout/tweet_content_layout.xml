@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tweet_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="动弹用户"
+        android:textColor="#46A3FF"
+        android:textSize="15sp" />
+
+    <custom.TweetTextView
+        android:id="@+id/tweet_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tweet_name"
+        android:layout_marginTop="8dp"
+        android:autoLink="email|phone|web"
+        android:text="测试一啊"
+        android:textColor="@color/day_textColor"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/tweet_iamge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tweet_content"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tweet_iamge"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tweet_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="1分钟前"
+            android:textColor="@color/day_infoTextColor"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tweet_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_toEndOf="@+id/tweet_time"
+            android:layout_toRightOf="@+id/tweet_time"
+            android:text="手机型号"
+            android:textColor="@color/day_infoTextColor"
+            android:textSize="11sp" />
+
+
+        <include
+            layout="@layout/comment_layout"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,35 +1,35 @@
 package base;
 
-import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 
 import com.loopj.android.http.RequestParams;
 
 import custom.RefreshListView;
+import inter.CacheInter;
 import inter.Presenter;
 import inter.PresenterView;
 import inter.RefreshListListener;
+import cache.CacheImpl;
 import presenter.PresenterImpl;
 import test.oschina_client.R;
 
 /**
  * Created by Administrator on 2016/5/22.
  */
-public abstract class BasePageItemFragment extends Fragment implements PresenterView, RefreshListListener{
+public abstract class BasePageItemFragment extends BaseFragment implements RefreshListListener, AdapterView.OnItemClickListener {
 
-    private RefreshListView mListView;
+    public RefreshListView mListView;
     private BaseAdapter mBaseAdapter;
-    private String mTag;
-    private Presenter presenterImple;
-    private String url;
+    private CacheInter cacheInter;
     private int pageIndex = 0;
 
     public BasePageItemFragment() {
@@ -37,29 +37,33 @@ public abstract class BasePageItemFragment extends Fragment implements Presenter
     }
 
     public BasePageItemFragment(String url) {
-        this.url = url;
+        super(url);
     }
 
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        return inflater.inflate(R.layout.tabit_fragment, null);
+    public View getRootView(LayoutInflater layoutInflater) {
+        return layoutInflater.inflate(R.layout.tabit_fragment, null);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
-    {
+    public void initView(View view) {
         mListView = (RefreshListView) view.findViewById(R.id.tabitem_listview);
         mListView.setRefreshListener(this);
-        presenterImple = new PresenterImpl(this);
-        presenterImple.visitNet(url, pageIndex);
+        mListView.setOnItemClickListener(this);
+        cacheInter = new CacheImpl(getContext());
+        RequestParams params = new RequestParams();
+        params.put("pageIndex", pageIndex);
+        mPresenterImple.visitNet(mUrl, params);
+
+        if (cacheInter.containKey(mUrl + pageIndex)) {
+            GetCacheAsync getCacheAsync = new GetCacheAsync();
+            getCacheAsync.execute();
+        } else {
+//            RequestParams params = new RequestParams();
+            params.put("pageIndex", pageIndex);
+            mPresenterImple.visitNet(mUrl, params);
+        }
     }
 
     public void setTag(String tag) {
@@ -71,22 +75,71 @@ public abstract class BasePageItemFragment extends Fragment implements Presenter
     }
 
     @Override
-    public void setView(Object bean) {
-        mBaseAdapter = getBaseAdapter(bean);
-        mListView.setAdapter(mBaseAdapter);
+    public void setView(byte[] bytes) {
+
+        String temp = new String(bytes);
+        MyCacheAsync myCacheAsync = new MyCacheAsync();
+        if (pageIndex > 0) {
+            loadMore(bytes);
+            myCacheAsync.execute(temp);
+        } else {
+            if (mBaseAdapter != null && !RefreshListView.refreshing) {
+                mListView.setAdapter(mBaseAdapter);
+            } else {
+                RefreshListView.refreshing = false;
+                mBaseAdapter = getBaseAdapter(bytes);
+                mListView.setAdapter(mBaseAdapter);
+            }
+            myCacheAsync.execute(temp);
+        }
     }
 
     @Override
     public void loadMoreData() {
+        mListView.setLoadMore();
         pageIndex++;
-        presenterImple.visitNet(url, pageIndex);
+        if (cacheInter.containKey(mUrl + pageIndex)) {
+            GetCacheAsync getCacheAsync = new GetCacheAsync();
+            getCacheAsync.execute();
+        } else {
+            RequestParams params = new RequestParams();
+            params.put("pageIndex", pageIndex);
+            mPresenterImple.visitNet(mUrl, params);
+        }
     }
+
 
     @Override
     public void refreshData() {
-        presenterImple.visitNet(url, 0);
+        pageIndex = 0;
+        RequestParams params = new RequestParams();
+        params.put("pageIndex", pageIndex);
+        mPresenterImple.visitNet(mUrl, params);
     }
 
-    public abstract BaseAdapter getBaseAdapter(Object bean);
+    public abstract BaseAdapter getBaseAdapter(byte[] bytes);
+
+    public abstract void loadMore(byte[] bytes);
+
+    class MyCacheAsync extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            cacheInter.saveString(mUrl + pageIndex, params[0]);
+            return null;
+        }
+    }
+
+    class GetCacheAsync extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPostExecute(String s) {
+            setView(s.getBytes());
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return cacheInter.getString(mUrl + pageIndex);
+        }
+    }
 
 }

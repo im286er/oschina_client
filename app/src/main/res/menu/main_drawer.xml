@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"> xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/drawer_answer"
+        android:title="技术问答"
+        android:icon="@drawable/icon_answer"/>
+
+    <item
+        android:id="@+id/drawer_opensoft"
+        android:title="开源软件"
+        android:icon="@drawable/icon_soft" />
+
+    <item
+        android:id="@+id/drawer_blog"
+        android:title="博客区"
+        android:icon="@drawable/icon_blog"/>
+
+    <item
+        android:id="@+id/drawer_git"
+        android:title="Git客户端"
+        android:icon="@drawable/icon_git"/>
+
+    <item android:title="其他">
+
+        <menu>
+
+            <item android:id="@+id/drawer_settings"
+                android:title="设置"
+                android:icon="@drawable/icon_setting"
+                />
+
+            <item
+                android:id="@+id/drawer_exit"
+                android:title="退出"
+                android:icon="@drawable/icon_exit"
+                />
+
+        </menu>
+
+    </item>
+
+</menu>
